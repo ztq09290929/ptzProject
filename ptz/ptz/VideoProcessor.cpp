@@ -119,17 +119,21 @@ void VideoProcessor::Run()
 
 		t1 = clock();
 		vibe_bgs.testAndUpdate(m_curFrame);
-		m_backImage = vibe_bgs.getMask();//获取全景前景滑窗
+		//m_backImage = vibe_bgs.getMask();//获取全景前景滑窗
 		m_foreImage = vibe_bgs.getFore();//获取前景
-		cv::medianBlur(m_foreImage, m_foreImage, 3);
-		cv::Mat element = cv::getStructuringElement(MORPH_RECT, cv::Size(3, 3), cv::Point(-1, -1));
-		cv::morphologyEx(m_foreImage, m_foreImage, MORPH_OPEN, element, cv::Point(-1, -1), 1);
+		//cv::medianBlur(m_foreImage, m_foreImage, 3);
+		cv::Mat element1 = cv::getStructuringElement(MORPH_RECT, cv::Size(5, 5), cv::Point(-1, -1));
+		cv::Mat element2 = cv::getStructuringElement(MORPH_RECT, cv::Size(5, 5), cv::Point(-1, -1));
+		//cv::morphologyEx(m_foreImage, m_foreImage, MORPH_CLOSE, element, cv::Point(-1, -1), 1);
+		cv::dilate(m_foreImage, m_foreImage, element1, cv::Point(-1, -1), 1);
+		cv::erode(m_foreImage, m_foreImage, element2, cv::Point(-1, -1), 2);
+
 		
 
 		t2 = clock();
 		std::cout << "ViBe所用时间：" << (double)(t2 - t1) / CLOCKS_PER_SEC << std::endl;
 
-		cv::imshow(m_windowNameOutputBack, m_backImage);
+		//cv::imshow(m_windowNameOutputBack, m_backImage);
 		cv::imshow(m_windowNameOutputFront, m_foreImage);
 		if (cv::waitKey(m_delay) == 27)break;
 

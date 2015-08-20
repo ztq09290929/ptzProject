@@ -3,8 +3,8 @@
 using namespace std;
 using namespace cv;
 
-int c_xoff[9] = { -1, 0, 1, -1, 1, -1, 0, 1, 0 };  //x的邻居点
-int c_yoff[9] = { -1, 0, 1, -1, 1, -1, 0, 1, 0 };  //y的邻居点
+int c_xoff[9] = { 0, 0, 0 ,- 1, -1, -1, 1, 1, 1 };  //x的邻居点
+int c_yoff[9] = { 0, -1, 1, 0, -1, 1, 0, -1, 1 };  //y的邻居点
 
 ViBe_BGS::ViBe_BGS(void)
 {
@@ -98,19 +98,39 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 		uchar gray = (uchar)_image[i].z;
 		if (0 <= xCol && xCol < imgCols && 0 <= yRow && yRow < imgRows)//如果该点在背景之内，继续处理
 		{
-			int matches(0), count(0);
-			int dist;
-
-			while (matches < MIN_MATCHES && count < NUM_SAMPLES)
+			int votes = 0;
+			int j = 0;
+			while (votes < VOTES && j < 9)
 			{
-				//dist = abs(samples[i][j][count] - _image.at<uchar>(i, j));
-				dist = abs(samples[yRow][xCol][count] - gray);//采用指针遍历方法更快
-				if (dist < RADIUS)
-					matches++;
-				count++;
+				int matches(0), count(0);
+				int dist;
+				int row, col;
+				row = yRow + c_yoff[j];
+				if (row < 0)
+					row = 0;
+				if (row >= imgRows)
+					row = imgRows - 1;
+
+				col = xCol + c_xoff[j];
+				if (col < 0)
+					col = 0;
+				if (col >= imgCols)
+					col = imgCols - 1;
+				while (matches < MIN_MATCHES && count < NUM_SAMPLES)
+				{
+					dist = abs(samples[row][col][count] - gray);//采用指针遍历方法更快
+					if (dist < RADIUS)
+						matches++;
+					count++;
+				}
+				if (matches >= MIN_MATCHES)
+				{
+					++votes;
+				}
+				++j;
 			}
 
-			if (matches >= MIN_MATCHES)
+			if (votes >= VOTES)
 			{
 				// It is a background pixel
 				samples[yRow][xCol][NUM_SAMPLES] = 0;
@@ -155,7 +175,7 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 				}
 			}
 
-			if (matches < MIN_MATCHES)
+			if (votes < VOTES)
 			{
 				// It is a foreground pixel
 				++samples[yRow][xCol][NUM_SAMPLES];
@@ -165,7 +185,7 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 				m_mask.at<uchar>(yRow, xCol) = 255;
 				m_fore.at<uchar>((int)i / m_fore.cols, (int)i%m_fore.cols) = 255;
 				//如果某个像素点连续N次被检测为前景，则认为一块静止区域被误判为运动，将其更新为背景点
-				if (samples[yRow][xCol][NUM_SAMPLES] > 50)
+				if (samples[yRow][xCol][NUM_SAMPLES] > 40)
 				{
 					int random = rng.uniform(0, SUBSAMPLE_FACTOR);
 					if (random == 0)
@@ -174,6 +194,29 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 						//samples[i][j][random] = _image.at<uchar>(i, j);
 						samples[yRow][xCol][random] = gray;
 
+					}
+					// 同时也有 1 / defaultSubsamplingFactor 的概率去更新它的邻居点的模型样本值
+					random = rng.uniform(0, SUBSAMPLE_FACTOR);
+					if (random == 0)
+					{
+						int row, col;
+						random = rng.uniform(0, 9);
+						row = yRow + c_yoff[random];
+						if (row < 0)
+							row = 0;
+						if (row >= imgRows)
+							row = imgRows - 1;
+
+						random = rng.uniform(0, 9);
+						col = xCol + c_xoff[random];
+						if (col < 0)
+							col = 0;
+						if (col >= imgCols)
+							col = imgCols - 1;
+
+						random = rng.uniform(0, NUM_SAMPLES);
+						//samples[row][col][random] = _image.at<uchar>(i, j);
+						samples[row][col][random] = gray;
 					}
 				}
 			}
