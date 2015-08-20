@@ -26,11 +26,11 @@ void VideoProcessor::Init(std::string filename)
 			return ;
 		}
 
-		if (count > 270 && (count == 276 || count % 100 == 40 || count == 600) && count < 602)
+		if (count > 600 && ( count==650||count % 100 == 1 || count == 1152) && count < 1200)
 		{
 			backImages.push_back(frame.clone());
 		}
-		if (count >= 602)
+		if (count >= 1200)
 		{
 			break;
 		}
