@@ -54,7 +54,7 @@ void VideoProcessor::Init(std::string filename)
 	keyPointMatch.Set_trainImage(m_pano);
 
 	///初始化ViBe背景模型
-	vibe_bgs.init(m_pano);
+	vibe_bgs.init(m_pano,frame);
 	vibe_bgs.processFirstFrame(m_pano);
 	std::cout << "初始化ViBe背景模型成功！" << std::endl;
 	return ;
@@ -119,16 +119,18 @@ void VideoProcessor::Run()
 
 		t1 = clock();
 		vibe_bgs.testAndUpdate(m_curFrame);
-		m_foreImage = vibe_bgs.getMask();
-		//cv::Mat element = cv::getStructuringElement(MORPH_RECT, cv::Size(3, 3), cv::Point(-1, -1));
-		//cv::morphologyEx(m_foreImage, m_foreImage, MORPH_OPEN, element, cv::Point(-1, -1), 1);
+		m_backImage = vibe_bgs.getMask();//获取全景前景滑窗
+		m_foreImage = vibe_bgs.getFore();//获取前景
 		cv::medianBlur(m_foreImage, m_foreImage, 3);
+		cv::Mat element = cv::getStructuringElement(MORPH_RECT, cv::Size(3, 3), cv::Point(-1, -1));
+		cv::morphologyEx(m_foreImage, m_foreImage, MORPH_OPEN, element, cv::Point(-1, -1), 1);
+		
 
 		t2 = clock();
 		std::cout << "ViBe所用时间：" << (double)(t2 - t1) / CLOCKS_PER_SEC << std::endl;
+
+		cv::imshow(m_windowNameOutputBack, m_backImage);
 		cv::imshow(m_windowNameOutputFront, m_foreImage);
-
-
 		if (cv::waitKey(m_delay) == 27)break;
 
 	}

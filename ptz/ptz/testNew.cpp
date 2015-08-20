@@ -3,8 +3,8 @@
 int main()
 {
 	VideoProcessor processor;
-	processor.Init("D:\\vs2013ProjectOpenCV3.0\\ptz\\ptz\\images\\output.avi");
-	if (processor.SetInput("D:\\vs2013ProjectOpenCV3.0\\ptz\\ptz\\images\\output.avi") != 0)
+	processor.Init("images/output.avi");
+	if (processor.SetInput("images/output.avi") != 0)
 	{
 		return -1;
 	}

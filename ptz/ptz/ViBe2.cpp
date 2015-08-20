@@ -27,7 +27,7 @@ ViBe_BGS::~ViBe_BGS(void)
 }
 
 /**************** Assign space and init ***************************/
-void ViBe_BGS::init(const Mat _image)
+void ViBe_BGS::init(const Mat _image, Mat frame)
 {
 	//首先记录分配动态数组的行列数, 第三维是NUM_SAMPLES + 1，在析构时用来释放内存
 	imgRows = _image.rows;
@@ -49,6 +49,8 @@ void ViBe_BGS::init(const Mat _image)
 
 	}
 	m_mask = Mat::zeros(_image.size(), CV_8UC1);
+	m_fore = Mat::zeros(frame.size(), CV_8UC1);
+	return;
 }
 
 /**************** Init model from first frame ********************/
@@ -117,7 +119,7 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 				//m_mask.at<uchar>(i, j) = 0;
 
 				m_mask.at<uchar>(yRow, xCol) = 0;
-
+				m_fore.at<uchar>((int)i / m_fore.cols, (int)i%m_fore.cols) = 0;
 				// 如果一个像素是背景点，那么它有 1 / defaultSubsamplingFactor 的概率去更新自己的模型样本值
 				int random = rng.uniform(0, SUBSAMPLE_FACTOR);
 				if (random == 0)
@@ -161,7 +163,7 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 				// Set background pixel to 255
 				//m_mask.at<uchar>(i, j) = 255;
 				m_mask.at<uchar>(yRow, xCol) = 255;
-
+				m_fore.at<uchar>((int)i / m_fore.cols, (int)i%m_fore.cols) = 255;
 				//如果某个像素点连续N次被检测为前景，则认为一块静止区域被误判为运动，将其更新为背景点
 				if (samples[yRow][xCol][NUM_SAMPLES] > 50)
 				{

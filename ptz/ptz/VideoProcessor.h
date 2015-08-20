@@ -24,7 +24,7 @@ private:
 
 	cv::Mat m_frame;//存储当前读取的一帧图像
 	cv::Mat m_foreImage;//前景图像
-	//cv::Mat m_backImage;//背景图像
+	cv::Mat m_backImage;//背景图像
 	cv::Mat m_pano;//全景图像
 	std::vector<cv::Point3f> m_curFrame;//坐标变换到全景背景图之后的当前帧的所有点，其中Point3f的三个参数分别为x,y,gray
 

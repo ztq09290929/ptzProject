@@ -17,10 +17,11 @@ public:
 	ViBe_BGS(void);
 	~ViBe_BGS(void);
 
-	void init(const Mat _image);   //初始化
+	void init(const Mat _image, Mat frame);   //初始化
 	void processFirstFrame(const Mat _image);
 	void testAndUpdate(std::vector<cv::Point3f> _image);  //更新
 	Mat getMask(void){ return m_mask; };
+	Mat getFore(void){ return m_fore; };
 	//void deleteSamples(){ delete samples; };
 
 private:
@@ -35,4 +36,5 @@ private:
 	int imgCols;
 
 	Mat m_mask;
+	Mat m_fore;
 };

@@ -59,7 +59,7 @@ Mat KeyPointMatch::Get_H()
 	vector<DMatch> goodMatches;
 	for (unsigned int i = 0; i < matches.size(); i++)
 	{
-		if (matches[i][0].distance < 0.6 * matches[i][1].distance)
+		if (matches[i][0].distance < 0.8 * matches[i][1].distance)///阈值需要调整，findHomography()可能会产生异常
 			goodMatches.push_back(matches[i][0]);
 	}
 
