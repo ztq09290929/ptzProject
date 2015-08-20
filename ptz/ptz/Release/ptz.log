@@ -1,0 +1,26 @@
+﻿生成启动时间为 2015/8/19 21:56:01。
+     1>项目“D:\vs2013ProjectOpenCV3.0\ptz\ptz\ptz.vcxproj”在节点 2 上(Build 个目标)。
+     1>InitializeBuildStatus:
+         正在创建“Release\ptz.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+       ClCompile:
+         E:\VS2013\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt KeyPointMatch.cpp VideoProcessor.cpp
+         KeyPointMatch.cpp
+     1>KeyPointMatch.cpp(113): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+     1>KeyPointMatch.cpp(114): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+         VideoProcessor.cpp
+       Link:
+         E:\VS2013\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\vs2013ProjectOpenCV3.0\ptz\Release\ptz.exe" /INCREMENTAL:NO /NOLOGO opencv_stitching2410.lib opencv_calib3d2410.lib opencv_contrib2410.lib opencv_core2410.lib opencv_features2d2410.lib opencv_flann2410.lib opencv_gpu2410.lib opencv_highgui2410.lib opencv_imgproc2410.lib opencv_legacy2410.lib opencv_ml2410.lib opencv_objdetect2410.lib opencv_ts2410.lib opencv_video2410.lib opencv_nonfree2410.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\vs2013ProjectOpenCV3.0\ptz\Release\ptz.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\vs2013ProjectOpenCV3.0\ptz\Release\ptz.lib" /MACHINE:X86 /SAFESEH Release\KeyPointMatch.obj
+         Release\testNew.obj
+         Release\ViBe2.obj
+         Release\VideoProcessor.obj
+         正在生成代码
+         已完成代码的生成
+         ptz.vcxproj -> D:\vs2013ProjectOpenCV3.0\ptz\Release\ptz.exe
+       FinalizeBuildStatus:
+         正在删除文件“Release\ptz.tlog\unsuccessfulbuild”。
+         正在对“Release\ptz.tlog\ptz.lastbuildstate”执行 Touch 任务。
+     1>已完成生成项目“D:\vs2013ProjectOpenCV3.0\ptz\ptz\ptz.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:03.31
