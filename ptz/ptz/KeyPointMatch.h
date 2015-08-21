@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _KEYPOINTMATCH_
+#define  _KEYPOINTMATCH_
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/nonfree/features2d.hpp>
@@ -29,4 +30,7 @@ private:
 	vector<KeyPoint> train_keyPoint;
 	int hessian = 400;//surf特征提取的海森阈值
 	std::vector<Point3f> TransformKeyPoint;
+	Mat trainDescriptor;//描述符（特征向量）
+	//flann::Index flannIndex;
 };
+#endif

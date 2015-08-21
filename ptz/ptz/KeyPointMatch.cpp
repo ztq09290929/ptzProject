@@ -4,23 +4,26 @@ void KeyPointMatch::Set_trainImage(Mat scene)
 {
 	//cvtColor(trainImage, trainImage_gray, CV_BGR2GRAY);
 	trainImage_gray = scene.clone();
-	Mat trainDescriptor;
+	
 #if SURF_USE
 	SurfFeatureDetector featureDetector(hessian);
 	featureDetector.detect(trainImage_gray, train_keyPoint);
 	SurfDescriptorExtractor featureExtractor;
 	featureExtractor.compute(trainImage_gray, train_keyPoint, trainDescriptor);
-#else
-	OrbFeatureDetector featureDetector;
-	featureDetector.detect(trainImage_gray, train_keyPoint);
-	OrbDescriptorExtractor featureExtractor;
-	featureExtractor.compute(trainImage_gray, train_keyPoint, trainDescriptor);
-#endif	
-
 	//【3】创建基于FLANN的描述符匹配对象
 	vector<Mat> train_desc_collection(1, trainDescriptor);
 	matcher.add(train_desc_collection);
 	matcher.train();
+#else
+	//【2】调用detect函数检测出特征关键点，保存在vector容器中
+	OrbFeatureDetector featureDetector;
+	featureDetector.detect(trainImage_gray, train_keyPoint);
+	//【3】计算描述符（特征向量）
+	OrbDescriptorExtractor featureExtractor;
+	featureExtractor.compute(trainImage_gray, train_keyPoint, trainDescriptor);
+#endif		
+
+	
 }
 void KeyPointMatch::Set_testImage(Mat obj)
 {
@@ -44,26 +47,54 @@ Mat KeyPointMatch::Get_H()
 		featureDetector.detect(testImage_gray, test_keyPoint);
 		SurfDescriptorExtractor featureExtractor;
 		featureExtractor.compute(testImage_gray, test_keyPoint, testDescriptor);
+		//<4>匹配训练和测试描述符
+		vector<vector<DMatch> > matches;
+		matcher.knnMatch(testDescriptor, matches, 2);
+		// <5>根据劳氏算法（Lowe's algorithm），得到优秀的匹配点
+		vector<DMatch> goodMatches;
+		for (unsigned int i = 0; i < matches.size(); i++)
+		{
+			if (matches[i][0].distance < 0.8 * matches[i][1].distance)///阈值需要调整，findHomography()可能会产生异常
+				goodMatches.push_back(matches[i][0]);
+		}
 #else	
-		OrbFeatureDetector featureDetector(hessian);
+		//【2】调用detect函数检测出特征关键点，保存在vector容器中
+		OrbFeatureDetector featureDetector;
 		featureDetector.detect(testImage_gray, test_keyPoint);
+		//【3】计算描述符（特征向量）
 		OrbDescriptorExtractor featureExtractor;
 		featureExtractor.compute(testImage_gray, test_keyPoint, testDescriptor);
+		//【7】检测SIFT关键点并提取测试图像中的描述符
+		//Mat testDescription;
+
+		////【8】调用detect函数检测出特征关键点，保存在vector容器中
+		//featureDetector.detect(testImage_gray, test_keyPoint);
+
+		////【9】计算描述符
+		//featureExtractor.compute(testImage_gray, test_keyPoint, testDescriptor);
+
+		//【10】匹配和测试描述符，获取两个最邻近的描述符
+		//【4】基于FLANN的描述符对象匹配
+		flann::Index flannIndex(trainDescriptor, flann::LshIndexParams(12, 20, 2), cvflann::FLANN_DIST_HAMMING);
+
+		Mat matchIndex(testDescriptor.rows, 2, CV_32SC1), matchDistance(testDescriptor.rows, 2, CV_32FC1);
+		flannIndex.knnSearch(testDescriptor, matchIndex, matchDistance, 2, flann::SearchParams());//调用K邻近算法
+
+		//【11】根据劳氏算法（Lowe's algorithm）选出优秀的匹配
+		vector<DMatch> goodMatches;
+		for (int i = 0; i < matchDistance.rows; i++)
+		{
+			if (matchDistance.at<float>(i, 0) < 0.6 * matchDistance.at<float>(i, 1))
+			{
+				DMatch dmatches(i, matchIndex.at<int>(i, 0), matchDistance.at<float>(i, 0));
+				goodMatches.push_back(dmatches);
+			}
+		}
 #endif
 
-	//<4>匹配训练和测试描述符
-	vector<vector<DMatch> > matches;
-	matcher.knnMatch(testDescriptor, matches, 2);
+	
 
-	// <5>根据劳氏算法（Lowe's algorithm），得到优秀的匹配点
-	vector<DMatch> goodMatches;
-	for (unsigned int i = 0; i < matches.size(); i++)
-	{
-		if (matches[i][0].distance < 0.8 * matches[i][1].distance)///阈值需要调整，findHomography()可能会产生异常
-			goodMatches.push_back(matches[i][0]);
-	}
-
-	////<6>绘制匹配点并显示窗口
+	//<6>绘制匹配点并显示窗口
 	//Mat dstImage;
 	//drawMatches(testImage, test_keyPoint, trainImage, train_keyPoint, goodMatches, dstImage);
 	//imshow("匹配窗口", dstImage);
@@ -71,7 +102,6 @@ Mat KeyPointMatch::Get_H()
 	//定义两个局部变量
 	vector<Point2f> obj;
 	vector<Point2f> scene;
-
 	//从匹配成功的匹配对中获取关键点
 	for (unsigned int i = 0; i < goodMatches.size(); i++)
 	{
@@ -167,82 +197,3 @@ std::vector<Point3f> KeyPointMatch::Get_TransformKeyPoint()
 //}
 
 
-//int main()
-//{
-//	//【0】改变console字体颜色
-//	system("color 6F");
-//
-//
-//
-//	//【1】载入图像、显示并转化为灰度图
-//	Mat trainImage = imread("pano.jpg"), trainImage_gray;
-//	imshow("原始图", trainImage);
-//	cvtColor(trainImage, trainImage_gray, CV_BGR2GRAY);
-//
-//	//【2】检测Surf关键点、提取训练图像描述符
-//	vector<KeyPoint> train_keyPoint;
-//	Mat trainDescriptor;
-//	SurfFeatureDetector featureDetector(1000);
-//	featureDetector.detect(trainImage_gray, train_keyPoint);
-//	SurfDescriptorExtractor featureExtractor;
-//	featureExtractor.compute(trainImage_gray, train_keyPoint, trainDescriptor);
-//
-//	//【3】创建基于FLANN的描述符匹配对象
-//	FlannBasedMatcher matcher;
-//	vector<Mat> train_desc_collection(1, trainDescriptor);
-//	matcher.add(train_desc_collection);
-//	matcher.train();
-//
-//	
-//		//<1>参数设置
-//		int64 time0 = getTickCount();
-//		Mat testImage, testImage_gray;
-//		testImage = imread("2.jpg");//得到带匹配testImage
-//		resize(testImage, testImage, Size(360, 240));
-//
-//		//<2>转化图像到灰度
-//		cvtColor(testImage, testImage_gray, CV_BGR2GRAY);
-//
-//		//<3>检测S关键点、提取测试图像描述符
-//		vector<KeyPoint> test_keyPoint;
-//		Mat testDescriptor;
-//		featureDetector.detect(testImage_gray, test_keyPoint);
-//		featureExtractor.compute(testImage_gray, test_keyPoint, testDescriptor);
-//
-//		//<4>匹配训练和测试描述符
-//		vector<vector<DMatch> > matches;
-//		matcher.knnMatch(testDescriptor, matches, 2);
-//
-//		// <5>根据劳氏算法（Lowe's algorithm），得到优秀的匹配点
-//		vector<DMatch> goodMatches;
-//		for (unsigned int i = 0; i < matches.size(); i++)
-//		{
-//			if (matches[i][0].distance < 0.6 * matches[i][1].distance)
-//				goodMatches.push_back(matches[i][0]);
-//		}
-//
-//		//<6>绘制匹配点并显示窗口
-//		Mat dstImage;
-//		drawMatches(testImage, test_keyPoint, trainImage, train_keyPoint, goodMatches, dstImage);
-//		imshow("匹配窗口", dstImage);
-//
-//		//<7>输出帧率信息
-//		cout << "当前帧率为：" << getTickFrequency() / (getTickCount() - time0) << endl;
-//	//}
-//
-//		//定义两个局部变量
-//		vector<Point2f> obj;
-//		vector<Point2f> scene;
-//
-//		//从匹配成功的匹配对中获取关键点
-//		for (unsigned int i = 0; i < goodMatches.size(); i++)
-//		{
-//			obj.push_back(test_keyPoint[goodMatches[i].queryIdx].pt);
-//			scene.push_back(train_keyPoint[goodMatches[i].trainIdx].pt);
-//		}
-//
-//		Mat H = findHomography(obj, scene, CV_RANSAC);//计算透视变换 
-//
-// 		waitKey(0);
-//	return 0;
-//}
