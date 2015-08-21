@@ -18,16 +18,19 @@ void VideoProcessor::Init(std::string filename)
 
 	while (true)
 	{
+
 		++count;
 		cap.read(frame);
 		if (frame.empty())
 		{
 			std::cout << "全景图-图像读取失败" << std::endl;
-			return ;
+			return;
 		}
 
 		if (count > 600 && ( count==650||count % 100 == 1 || count == 1152) && count < 1200)
+		//if (count==5||count==370||count==400||count==445||count==490||count==540||count==600)
 		{
+
 			backImages.push_back(frame.clone());
 		}
 		if (count >= 1200)
@@ -119,7 +122,7 @@ void VideoProcessor::Run()
 
 		t1 = clock();
 		vibe_bgs.testAndUpdate(m_curFrame);
-		//m_backImage = vibe_bgs.getMask();//获取全景前景滑窗
+		m_backImage = vibe_bgs.getMask();//获取全景前景滑窗
 		m_foreImage = vibe_bgs.getFore();//获取前景
 		//cv::medianBlur(m_foreImage, m_foreImage, 3);
 		cv::Mat element1 = cv::getStructuringElement(MORPH_RECT, cv::Size(5, 5), cv::Point(-1, -1));
@@ -133,7 +136,7 @@ void VideoProcessor::Run()
 		t2 = clock();
 		std::cout << "ViBe所用时间：" << (double)(t2 - t1) / CLOCKS_PER_SEC << std::endl;
 
-		//cv::imshow(m_windowNameOutputBack, m_backImage);
+		cv::imshow(m_windowNameOutputBack, m_backImage);
 		cv::imshow(m_windowNameOutputFront, m_foreImage);
 		if (cv::waitKey(m_delay) == 27)break;
 
