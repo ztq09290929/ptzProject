@@ -13,12 +13,10 @@ void VideoProcessor::Init(std::string filename)
 		return ;
 	}
 	cv::Mat frame;//存储当前帧
-	std::vector<cv::Mat> backImages;//存储背景的5个子图
+	std::vector<cv::Mat> backImages;//存储背景的子图
 	int count = 0;
-
 	while (true)
 	{
-
 		++count;
 		cap.read(frame);
 		if (frame.empty())
@@ -30,7 +28,6 @@ void VideoProcessor::Init(std::string filename)
 		if (count > 600 && ( count==650||count % 100 == 1 || count == 1152) && count < 1200)
 		//if (count==5||count==370||count==400||count==445||count==490||count==540||count==600)
 		{
-
 			backImages.push_back(frame.clone());
 		}
 		if (count >= 1200)
@@ -53,8 +50,8 @@ void VideoProcessor::Init(std::string filename)
 	cv::destroyAllWindows();
 
 	///提取全景图特征
-	std::cout << "提取全景图特征成功！" << std::endl;
 	keyPointMatch.Set_trainImage(m_pano);
+	std::cout << "提取全景图特征成功！" << std::endl;
 
 	///初始化ViBe背景模型
 	vibe_bgs.init(m_pano,frame);
@@ -66,7 +63,6 @@ void VideoProcessor::Init(std::string filename)
 int VideoProcessor::SetInput(std::string filename)
 {
 	m_capture.release();
-
 	m_capture.open(filename);
 	if (!m_capture.isOpened())
 	{
@@ -95,13 +91,10 @@ void VideoProcessor::DisplayOutputBack(std::string wn)
 void VideoProcessor::SetDelay(int d)
 {
 	m_delay = d;
-
 }
-
 
 void VideoProcessor::Run()
 {
-	
 	while (m_capture.read(m_frame))
 	{
 		//计时
@@ -131,15 +124,12 @@ void VideoProcessor::Run()
 		cv::dilate(m_foreImage, m_foreImage, element1, cv::Point(-1, -1), 1);
 		cv::erode(m_foreImage, m_foreImage, element2, cv::Point(-1, -1), 2);
 
-		
-
 		t2 = clock();
 		std::cout << "ViBe所用时间：" << (double)(t2 - t1) / CLOCKS_PER_SEC << std::endl;
 
 		cv::imshow(m_windowNameOutputBack, m_backImage);
 		cv::imshow(m_windowNameOutputFront, m_foreImage);
 		if (cv::waitKey(m_delay) == 27)break;
-
 	}
 }
 

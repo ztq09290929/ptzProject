@@ -12,6 +12,7 @@ ViBe_BGS::ViBe_BGS(void)
 }
 ViBe_BGS::~ViBe_BGS(void)
 {
+	//释放三维数组
 	for (int i = 0; i < imgRows; ++i)
 	{
 		for (int j = 0; j < imgCols; ++j)
@@ -44,12 +45,11 @@ void ViBe_BGS::init(const Mat _image, Mat frame)
 			{
 				samples[i][j][k] = 0;
 			}
-
 		}
-
 	}
-	m_mask = Mat::zeros(_image.size(), CV_8UC1);
-	m_fore = Mat::zeros(frame.size(), CV_8UC1);
+
+	m_mask = Mat::zeros(_image.size(), CV_8UC1);//大小和全景图相同
+	m_fore = Mat::zeros(frame.size(), CV_8UC1);//大小和当前帧相同
 	return;
 }
 
@@ -87,21 +87,49 @@ void ViBe_BGS::processFirstFrame(const Mat _image)
 	}
 }
 
+std::vector<cv::Point2i> ViBe_BGS::getNbhdPoints(float row, float col)
+{
+	std::vector<cv::Point2i> returnPoints;
+	int leftX, rightX, topY, botY;
+	leftX = ceil(col - RADIUS_NBHD) < 0 ? 0 : ceil(col - RADIUS_NBHD);
+	rightX = floor(col + RADIUS_NBHD)>(imgCols - 1) ? (imgCols - 1) : floor(col + RADIUS_NBHD);
+	topY = ceil(row - RADIUS_NBHD) < 0 ? 0 : ceil(row - RADIUS_NBHD);
+	botY = floor(row + RADIUS_NBHD)>(imgRows - 1) ? (imgRows - 1) : floor(row + RADIUS_NBHD);
+	for (int i = topY; i <= botY; ++i)
+	{
+		for (int j = leftX; j <= rightX; ++j)
+		{
+			if (((i - row)*(i - row) + (j - col)*(j - col)) <= RADIUS_NBHD*RADIUS_NBHD)
+			{
+				cv::Point2i temp;
+				temp.x = j;
+				temp.y = i;
+				returnPoints.push_back(temp);
+			}
+		}
+	}
+	return returnPoints;
+
+}
+
 /**************** Test a new frame and update model ********************/
 void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 {
 	RNG rng;
 	for (unsigned int i = 0; i < _image.size(); i++)
 	{
-		int xCol = (int)(_image[i].x + 0.5);//得到这一点四舍五入之后的x和y坐标以及灰度值
-		int yRow = (int)(_image[i].y + 0.5);
+		float xfCol = _image[i].x ;//得到这一点的x和y坐标以及灰度值
+		float yfRow = _image[i].y ;
+		int xCol = (int)(xfCol + 0.5);//得到这一点四舍五入之后的x和y坐标以及灰度值
+		int yRow = (int)(yfRow + 0.5);
 		uchar gray = (uchar)_image[i].z;
-		if (0 <= xCol && xCol < imgCols && 0 <= yRow && yRow < imgRows)//如果该点在背景之内，继续处理
+		if (0 <= xfCol && xfCol <= (imgCols - 1) && 0 <= yfRow && yfRow <= (imgRows - 1))//如果该点在背景之内，继续处理
 		{
-#if 1
+#if USE_MNEW //块匹配
+#if USE_M1
 			int votes = 0;
-			int j = 0;
-			while (votes < VOTES && j < 9)
+			uchar j = 0;
+			while (votes < VOTES && j < 9)//遍历当前像素3*3邻域
 			{
 				int matches(0), count(0);
 				int dist;
@@ -130,15 +158,49 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 				}
 				++j;
 			}
+#endif
+#if USE_M2
+			int votes = 0;
+			unsigned int j = 0;
+			std::vector<cv::Point2i> nbhdPoints = getNbhdPoints(yfRow, xfCol);
+			while (votes < VOTES && j < nbhdPoints.size())
+			{
+				int matches(0), count(0);
+				int dist;
+				int row, col;
+				row = nbhdPoints[j].y;
+				col = nbhdPoints[j].x;
+				//row = yRow + c_yoff[j];
+				//if (row < 0)
+				//	row = 0;
+				//if (row >= imgRows)
+				//	row = imgRows - 1;
 
+				//col = xCol + c_xoff[j];
+				//if (col < 0)
+				//	col = 0;
+				//if (col >= imgCols)
+				//	col = imgCols - 1;
+				while (matches < MIN_MATCHES && count < NUM_SAMPLES)
+				{
+					dist = abs(samples[row][col][count] - gray);//采用指针遍历方法更快
+					if (dist < RADIUS)
+						matches++;
+					count++;
+				}
+				if (matches >= MIN_MATCHES)
+				{
+					++votes;
+				}
+				++j;
+			}
+#endif
 			if (votes >= VOTES)
 			{
 				// It is a background pixel
 				samples[yRow][xCol][NUM_SAMPLES] = 0;
 
 				// Set background pixel to 0
-				//m_mask.at<uchar>(i, j) = 0;
-
 				m_mask.at<uchar>(yRow, xCol) = 0;
 				m_fore.at<uchar>((int)i / m_fore.cols, (int)i%m_fore.cols) = 0;
 				// 如果一个像素是背景点，那么它有 1 / defaultSubsamplingFactor 的概率去更新自己的模型样本值
@@ -146,9 +208,7 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 				if (random == 0)
 				{
 					random = rng.uniform(0, NUM_SAMPLES);
-					//samples[i][j][random] = _image.at<uchar>(i, j);
 					samples[yRow][xCol][random] = gray;//使用指针遍历更快
-
 				}
 
 				// 同时也有 1 / defaultSubsamplingFactor 的概率去更新它的邻居点的模型样本值
@@ -171,7 +231,6 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 						col = imgCols - 1;
 
 					random = rng.uniform(0, NUM_SAMPLES);
-					//samples[row][col][random] = _image.at<uchar>(i, j);
 					samples[row][col][random] = gray;
 				}
 			}
@@ -182,7 +241,6 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 				++samples[yRow][xCol][NUM_SAMPLES];
 
 				// Set background pixel to 255
-				//m_mask.at<uchar>(i, j) = 255;
 				m_mask.at<uchar>(yRow, xCol) = 255;
 				m_fore.at<uchar>((int)i / m_fore.cols, (int)i%m_fore.cols) = 255;
 				//如果某个像素点连续N次被检测为前景，则认为一块静止区域被误判为运动，将其更新为背景点
@@ -192,7 +250,6 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 					if (random == 0)
 					{
 						random = rng.uniform(0, NUM_SAMPLES);
-						//samples[i][j][random] = _image.at<uchar>(i, j);
 						samples[yRow][xCol][random] = gray;
 
 					}
@@ -216,12 +273,11 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 							col = imgCols - 1;
 
 						random = rng.uniform(0, NUM_SAMPLES);
-						//samples[row][col][random] = _image.at<uchar>(i, j);
 						samples[row][col][random] = gray;
 					}
 				}
 			}
-#else
+#else //点匹配
 
 			int matches(0), count(0);
 			int dist;

@@ -15,6 +15,20 @@ using namespace cv;
 
 class VideoProcessor
 {
+public:
+	VideoProcessor():m_delay(1){}//构造函数，初始化列表赋初值
+
+	void Init(std::string filename);//获取全景图像，获取全景图像的特征，用全景图像建立ViBe初始背景
+
+	int SetInput(std::string filename);//设置输入视频文件名称，并打开视频
+	void SetDelay(int d);//设置延迟
+
+	void DisplayInput(std::string wn);//创建输入窗口
+	void DisplayOutputFront(std::string wn);//创建输出前景窗口
+	void DisplayOutputBack(std::string wn);//创建输出背景窗口
+
+	void Run();//开始处理循环
+
 private:
 	cv::VideoCapture m_capture;//打开的视频
 
@@ -32,21 +46,6 @@ private:
 	KeyPointMatch keyPointMatch;//图像配准类
 
 	int m_delay;//每两帧之间的时间间隔
-
-public:
-	VideoProcessor():m_delay(1){}//构造函数，初始化列表赋初值
-
-	void Init(std::string filename);//获取全景图像，获取全景图像的特征，用全景图像建立ViBe初始背景
-
-	int SetInput(std::string filename);//设置输入视频文件名称，并打开视频
-	void SetDelay(int d);//设置延迟
-
-	void DisplayInput(std::string wn);//创建输入窗口
-	void DisplayOutputFront(std::string wn);//创建输出前景窗口
-	void DisplayOutputBack(std::string wn);//创建输出背景窗口
-
-	void Run();//开始处理循环
-
 
 };
 
