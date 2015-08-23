@@ -48,6 +48,7 @@ void ViBe_BGS::init(const Mat _image, Mat frame)
 		}
 	}
 
+	m_pano = _image.clone();
 	m_mask = Mat::zeros(_image.size(), CV_8UC1);//大小和全景图相同
 	m_fore = Mat::zeros(frame.size(), CV_8UC1);//大小和当前帧相同
 	return;
@@ -115,6 +116,7 @@ std::vector<cv::Point2i> ViBe_BGS::getNbhdPoints(float row, float col)
 /**************** Test a new frame and update model ********************/
 void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 {
+	m_mask = m_pano.clone();
 	RNG rng;
 	for (unsigned int i = 0; i < _image.size(); i++)
 	{
@@ -198,7 +200,7 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 			if (votes >= VOTES)
 			{
 				// It is a background pixel
-				samples[yRow][xCol][NUM_SAMPLES] = 0;
+				samples[yRow][xCol][NUM_SAMPLES] = 0;//此处更新背景还需改进
 
 				// Set background pixel to 0
 				m_mask.at<uchar>(yRow, xCol) = 0;
@@ -208,7 +210,7 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 				if (random == 0)
 				{
 					random = rng.uniform(0, NUM_SAMPLES);
-					samples[yRow][xCol][random] = gray;//使用指针遍历更快
+					samples[yRow][xCol][random] = gray;//此处更新背景还需改进
 				}
 
 				// 同时也有 1 / defaultSubsamplingFactor 的概率去更新它的邻居点的模型样本值
@@ -231,7 +233,7 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 						col = imgCols - 1;
 
 					random = rng.uniform(0, NUM_SAMPLES);
-					samples[row][col][random] = gray;
+					samples[row][col][random] = gray;//此处更新背景还需改进
 				}
 			}
 
@@ -250,7 +252,7 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 					if (random == 0)
 					{
 						random = rng.uniform(0, NUM_SAMPLES);
-						samples[yRow][xCol][random] = gray;
+						samples[yRow][xCol][random] = gray;//此处更新背景还需改进
 
 					}
 					// 同时也有 1 / defaultSubsamplingFactor 的概率去更新它的邻居点的模型样本值
@@ -273,7 +275,7 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 							col = imgCols - 1;
 
 						random = rng.uniform(0, NUM_SAMPLES);
-						samples[row][col][random] = gray;
+						samples[row][col][random] = gray;//此处更新背景还需改进
 					}
 				}
 			}

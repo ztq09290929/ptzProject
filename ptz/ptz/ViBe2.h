@@ -37,6 +37,7 @@ private:
 	int imgRows;//存储全景图的尺寸大小，即为背景样本的尺寸，方便释放数组samples
 	int imgCols;
 
+	Mat m_pano;//存储灰度全景图
 	Mat m_mask;//全景图中显示前景
 	Mat m_fore;//前景
 };

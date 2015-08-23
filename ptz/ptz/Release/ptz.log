@@ -1,4 +1,4 @@
-﻿生成启动时间为 2015/8/22 9:46:44。
+﻿生成启动时间为 2015/8/23 10:53:38。
      1>项目“D:\vs2013ProjectOpenCV3.0\ptzProject\ptz\ptz\ptz.vcxproj”在节点 2 上(Rebuild 个目标)。
      1>_PrepareForClean:
          正在删除文件“Release\ptz.tlog\ptz.lastbuildstate”。
@@ -11,10 +11,10 @@
      1>KeyPointMatch.cpp(144): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
          testNew.cpp
          ViBe2.cpp
-     1>ViBe2.cpp(94): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
      1>ViBe2.cpp(95): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
      1>ViBe2.cpp(96): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
      1>ViBe2.cpp(97): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+     1>ViBe2.cpp(98): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
          VideoProcessor.cpp
        Link:
          E:\VS2013\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\vs2013ProjectOpenCV3.0\ptzProject\ptz\Release\ptz.exe" /INCREMENTAL:NO /NOLOGO opencv_stitching2410.lib opencv_calib3d2410.lib opencv_contrib2410.lib opencv_core2410.lib opencv_features2d2410.lib opencv_flann2410.lib opencv_gpu2410.lib opencv_highgui2410.lib opencv_imgproc2410.lib opencv_legacy2410.lib opencv_ml2410.lib opencv_objdetect2410.lib opencv_ts2410.lib opencv_video2410.lib opencv_nonfree2410.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\vs2013ProjectOpenCV3.0\ptzProject\ptz\Release\ptz.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\vs2013ProjectOpenCV3.0\ptzProject\ptz\Release\ptz.lib" /MACHINE:X86 /SAFESEH Release\KeyPointMatch.obj
@@ -31,4 +31,4 @@
 
 生成成功。
 
-已用时间 00:00:07.61
+已用时间 00:00:04.78
