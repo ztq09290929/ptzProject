@@ -7,7 +7,7 @@ using namespace std;
 
 #define NUM_SAMPLES 20		//每个像素点的样本个数
 #define MIN_MATCHES 2		//#min指数
-#define RADIUS 20		//Sqthere半径
+#define RADIUS 25		//Sqthere半径
 #define SUBSAMPLE_FACTOR 8//子采样概率
 #define VOTES 1				//邻域像素投票阈值，认为是背景的
 #define RADIUS_NBHD	2	//搜索邻域半径
