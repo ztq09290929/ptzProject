@@ -3,8 +3,8 @@
 int main()
 {
 	VideoProcessor processor;
-	processor.Init("images/output2.avi");
-	if (processor.SetInput("images/output2.avi") != 0)
+	processor.Init("images/output.avi");
+	if (processor.SetInput("images/output.avi") != 0)
 	{
 		return -1;
 	}

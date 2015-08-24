@@ -1,5 +1,6 @@
 #include "ViBe2.h"
 
+
 using namespace std;
 using namespace cv;
 
@@ -88,14 +89,14 @@ void ViBe_BGS::processFirstFrame(const Mat _image)
 	}
 }
 
-std::vector<cv::Point2i> ViBe_BGS::getNbhdPoints(float row, float col)
+void ViBe_BGS::getNbhdPoints(float row, float col, std::vector<cv::Point2i>& returnPoints)
 {
-	std::vector<cv::Point2i> returnPoints;
 	int leftX, rightX, topY, botY;
 	leftX = ceil(col - RADIUS_NBHD) < 0 ? 0 : ceil(col - RADIUS_NBHD);
 	rightX = floor(col + RADIUS_NBHD)>(imgCols - 1) ? (imgCols - 1) : floor(col + RADIUS_NBHD);
 	topY = ceil(row - RADIUS_NBHD) < 0 ? 0 : ceil(row - RADIUS_NBHD);
 	botY = floor(row + RADIUS_NBHD)>(imgRows - 1) ? (imgRows - 1) : floor(row + RADIUS_NBHD);
+	int count = 0; 
 	for (int i = topY; i <= botY; ++i)
 	{
 		for (int j = leftX; j <= rightX; ++j)
@@ -105,12 +106,12 @@ std::vector<cv::Point2i> ViBe_BGS::getNbhdPoints(float row, float col)
 				cv::Point2i temp;
 				temp.x = j;
 				temp.y = i;
-				returnPoints.push_back(temp);
+				//returnPoints.push_back(temp); //Âý
+				returnPoints[count] = temp;
+				++count;
 			}
 		}
 	}
-	return returnPoints;
-
 }
 
 /**************** Test a new frame and update model ********************/
@@ -131,6 +132,7 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 #if USE_M1
 			int votes = 0;
 			uchar j = 0;
+
 			while (votes < VOTES && j < 9)//±éÀúµ±Ç°ÏñËØ3*3ÁÚÓò
 			{
 				int matches(0), count(0);
@@ -164,7 +166,8 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 #if USE_M2
 			int votes = 0;
 			unsigned int j = 0;
-			std::vector<cv::Point2i> nbhdPoints = getNbhdPoints(yfRow, xfCol);
+			std::vector<cv::Point2i> nbhdPoints(15);
+			getNbhdPoints(yfRow, xfCol, nbhdPoints);
 			while (votes < VOTES && j < nbhdPoints.size())
 			{
 				int matches(0), count(0);

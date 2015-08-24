@@ -13,8 +13,8 @@ using namespace std;
 #define RADIUS_NBHD	2	//搜索邻域半径
 
 #define USE_MNEW 1		//新的ViBe采用块匹配，旧的ViBe采用点匹配
-#define USE_M1 1		//采用3*3邻域
-#define USE_M2 0		//采用圆形邻域
+#define USE_M1 0		//采用3*3邻域
+#define USE_M2 1		//采用圆形邻域
 
 class ViBe_BGS
 {
@@ -29,7 +29,7 @@ public:
 	Mat getMask(void){ return m_mask; };
 	Mat getFore(void){ return m_fore; };
 
-	std::vector<cv::Point2i> getNbhdPoints(float row,float col);//获取以RADIUS_NBHD为半径的园内的所有像素点坐标
+	void getNbhdPoints(float row, float col, std::vector<cv::Point2i>& returnPoints);//获取以RADIUS_NBHD为半径的园内的所有像素点坐标
 
 private:
 	unsigned char ***samples;//此三维数组既保存20个背景，也保存前景计数器
