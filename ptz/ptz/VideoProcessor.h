@@ -10,6 +10,8 @@
 #include <time.h>
 #include "ViBe2.h"
 #include "KeyPointMatch.h"
+
+using namespace std;
 using namespace cv;
 
 

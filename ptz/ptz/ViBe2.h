@@ -13,8 +13,8 @@ using namespace std;
 #define RADIUS_NBHD	2	//搜索邻域半径
 
 #define USE_MNEW 1		//新的ViBe采用块匹配，旧的ViBe采用点匹配
-#define USE_M1 0		//采用3*3邻域
-#define USE_M2 1		//采用圆形邻域
+#define USE_M1 1		//采用3*3邻域
+#define USE_M2 0		//采用圆形邻域
 
 class ViBe_BGS
 {

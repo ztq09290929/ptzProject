@@ -175,17 +175,7 @@ void ViBe_BGS::testAndUpdate(std::vector<cv::Point3f> _image)
 				int row, col;
 				row = nbhdPoints[j].y;
 				col = nbhdPoints[j].x;
-				//row = yRow + c_yoff[j];
-				//if (row < 0)
-				//	row = 0;
-				//if (row >= imgRows)
-				//	row = imgRows - 1;
 
-				//col = xCol + c_xoff[j];
-				//if (col < 0)
-				//	col = 0;
-				//if (col >= imgCols)
-				//	col = imgCols - 1;
 				while (matches < MIN_MATCHES && count < NUM_SAMPLES)
 				{
 					dist = abs(samples[row][col][count] - gray);//采用指针遍历方法更快
