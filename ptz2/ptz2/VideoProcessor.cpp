@@ -120,12 +120,11 @@ void VideoProcessor::Run()
 		vibe_bgs.testAndUpdate(m_curFrame);
 		m_backImage = vibe_bgs.getMask();//获取全景前景滑窗
 		m_foreImage = vibe_bgs.getFore();//获取前景
+
 		//cv::medianBlur(m_foreImage, m_foreImage, 3);
 		cv::Mat element1 = cv::getStructuringElement(MORPH_RECT, cv::Size(5, 5), cv::Point(-1, -1));
-		cv::Mat element2 = cv::getStructuringElement(MORPH_RECT, cv::Size(5, 5), cv::Point(-1, -1));
-		
+		cv::Mat element2 = cv::getStructuringElement(MORPH_RECT, cv::Size(5, 5), cv::Point(-1, -1));	
 		//cv::morphologyEx(m_foreImage, m_foreImage, MORPH_CLOSE, element1, cv::Point(-1, -1), 3);
-
 		cv::dilate(m_foreImage, m_foreImage, element1, cv::Point(-1, -1), 3);
 		cv::erode(m_foreImage, m_foreImage, element2, cv::Point(-1, -1), 5);
 
@@ -142,6 +141,8 @@ void VideoProcessor::Run()
 		//cout << "团块数量" << blob->GetBlobNum() << endl;
 		//cv:Mat img = Mat(pImg);
 		cblob.BlobDetecter(m_foreImage, colorImg);
+		cblob.ClassifyCenters();
+		cblob.DrawPaths(colorImg);
 
 		cv::imshow(m_windowNameInput, colorImg);
 		cv::imshow(m_windowNameOutputBack, m_backImage);

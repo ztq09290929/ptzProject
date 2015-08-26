@@ -56,7 +56,7 @@ private:
 	ViBe_BGS vibe_bgs;//ViBe算法类
 	KeyPointMatch keyPointMatch;//图像配准类
 //	CvBlobTrackerAuto* blob;
-	CBlob cblob;
+	CBlob cblob;//目标跟踪类
 
 	int m_delay;//每两帧之间的时间间隔
 
