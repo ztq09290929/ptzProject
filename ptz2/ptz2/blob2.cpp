@@ -89,7 +89,7 @@ void CBlob::FindNearstPointKal(cv::Point pLast, int& id, vector<int>& index)
 		}
 		++count;
 	}
-	if (minDist < 70)//与上一函数功能相同，只是输入的点为卡尔曼滤波的预测点，在该预测点附近查找
+	if (minDist < 78)//与上一函数功能相同，只是输入的点为卡尔曼滤波的预测点，在该预测点附近查找
 	{
 		index[id] = 0;
 	}
@@ -101,6 +101,7 @@ void CBlob::FindNearstPointKal(cv::Point pLast, int& id, vector<int>& index)
 
 void CBlob::ClassifyCenters(Mat& _outputImg)
 {
+	cv::Mat outROI = _outputImg(cv::Rect(_outputImg.cols / 20, _outputImg.rows / 20, _outputImg.cols * 18 / 20, _outputImg.rows * 18 / 20));
 	if (m_listCenters.empty())//如果存储物体的链表为空，首先用当前帧的矩形中心点集去初始化各个物体
 	{
 		for (auto i = m_centers.begin(); i != m_centers.end(); ++i)//每一点都是一个新的物体
@@ -140,7 +141,7 @@ void CBlob::ClassifyCenters(Mat& _outputImg)
 			{
 				cv::Point prePoint = it->Predict();//预估出当前帧这一点的位置
 
-				cv::circle(_outputImg, prePoint, 5, cv::Scalar(0, 255, 255), 3, 8);
+				cv::circle(outROI, prePoint, 5, cv::Scalar(0, 255, 255), 3, 8);
 
 				int id;
 				FindNearstPointKal(prePoint, id, index);//在预估的位置附近寻找真实的点的位置
@@ -237,6 +238,7 @@ cv::Point ObjectAndKF::Predict()
 
 	return predictPt;
 }
+
 void ObjectAndKF::Correct(int num)
 {
 	//3.update measurement  

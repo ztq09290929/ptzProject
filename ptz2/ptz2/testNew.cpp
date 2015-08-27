@@ -3,8 +3,8 @@
 int main()
 {
 	VideoProcessor processor;//视频播放类，是程序的框架
-	processor.Init("images/output.avi");//初始化视频播放类，完成全景图提取，特征点提取初始化和ViBe的初始化
-	if (processor.SetInput("images/output.avi") != 0)//读入一个视频
+	processor.Init("images/outputno.avi");//初始化视频播放类，完成全景图提取，特征点提取初始化和ViBe的初始化
+	if (processor.SetInput("images/outputno.avi") != 0)//读入一个视频
 	{
 		return -1;
 	}
