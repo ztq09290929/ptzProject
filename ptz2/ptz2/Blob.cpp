@@ -12,7 +12,7 @@ void CBlob::BlobDetecter(const cv::Mat& _binImg, cv::Mat& _outputImg)
 	std::vector<std::vector<cv::Point>> goodContours;
 	for (auto i = contours.begin(); i != contours.end(); ++i)
 	{
-		if (i->size() > 35)///人为设定的阈值，排除较小的轮廓
+		if (i->size() > 45)///人为设定的阈值，排除较小的轮廓
 		{
 			goodContours.push_back(*i);
 		}
@@ -55,7 +55,7 @@ void CBlob::FindNearstPoint(cv::Point pLast, int& id, vector<int>& index)
 		}
 		++count;
 	}
-	if (minDist < 70)
+	if (minDist < 100)
 	{
 		index[id] = 0;
 	}

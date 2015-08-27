@@ -27,7 +27,7 @@
     <ClCompile Include="VideoProcessor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Blob.cpp">
+    <ClCompile Include="blob2.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,7 +41,7 @@
     <ClInclude Include="VideoProcessor.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="blob.h">
+    <ClInclude Include="blob2.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

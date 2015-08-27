@@ -11,14 +11,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Blob.cpp" />
+    <ClCompile Include="blob2.cpp" />
     <ClCompile Include="KeyPointMatch.cpp" />
     <ClCompile Include="testNew.cpp" />
     <ClCompile Include="ViBe2.cpp" />
     <ClCompile Include="VideoProcessor.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="blob.h" />
+    <ClInclude Include="blob2.h" />
     <ClInclude Include="KeyPointMatch.h" />
     <ClInclude Include="ViBe2.h" />
     <ClInclude Include="VideoProcessor.h" />
