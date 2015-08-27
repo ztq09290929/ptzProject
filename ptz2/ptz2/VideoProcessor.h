@@ -10,11 +10,8 @@
 #include <time.h>
 #include "ViBe2.h"
 #include "KeyPointMatch.h"
-#include "blob.h"
-//#include "opencv2/video/background_segm.hpp"
-//#include "opencv2/legacy/blobtrack.hpp"
-//#include "opencv2/legacy/legacy.hpp"
-//#include <opencv2/imgproc/imgproc_c.h>
+#include "blob2.h"
+
 
 using namespace std;
 using namespace cv;
@@ -51,11 +48,10 @@ private:
 	cv::Mat m_foreImage;//前景图像
 	cv::Mat m_backImage;//背景图像
 	cv::Mat m_pano;//全景图像
-	std::vector<cv::Point3f> m_curFrame;//坐标变换到全景背景图之后的当前帧的所有点，其中Point3f的三个参数分别为x,y,gray
+	std::vector<cv::Point3f> m_curFrame;//将当前帧利用H矩阵，坐标变换到全景背景图之后的当前帧的所有点，其中Point3f的三个参数分别为x,y,gray
 
 	ViBe_BGS vibe_bgs;//ViBe算法类
 	KeyPointMatch keyPointMatch;//图像配准类
-//	CvBlobTrackerAuto* blob;
 	CBlob cblob;//目标跟踪类
 
 	int m_delay;//每两帧之间的时间间隔

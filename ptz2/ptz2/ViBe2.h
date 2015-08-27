@@ -6,11 +6,11 @@ using namespace cv;
 using namespace std;
 
 #define NUM_SAMPLES 20		//每个像素点的样本个数
-#define MIN_MATCHES 2		//#min指数
-#define RADIUS 25		//Sqthere半径
+#define MIN_MATCHES 2		//#min指数，有两个以上灰度值相近，则认为是背景
+#define RADIUS 25		//Sqthere半径，判断两个灰度值是否相近
 #define SUBSAMPLE_FACTOR 8//子采样概率
 #define VOTES 1				//邻域像素投票阈值，认为是背景的
-#define RADIUS_NBHD	2	//搜索邻域半径
+#define RADIUS_NBHD	2	//搜索邻域圆的半径
 
 
 class ViBe_BGS
@@ -20,8 +20,8 @@ public:
 	~ViBe_BGS(void);
 
 	void init(const Mat& _image, Mat frame);   //初始化
-	void processFirstFrame(const Mat& _image);
-	void testAndUpdate(const std::vector<cv::Point3f>& _image);  //更新
+	void processFirstFrame(const Mat& _image); //利用第一帧图像建立背景
+	void testAndUpdate(const std::vector<cv::Point3f>& _image);  //利用当前帧更新前景
 
 	Mat getMask(void){ return m_mask; };
 	Mat getFore(void){ return m_fore; };
